@@ -39,12 +39,16 @@ ren slack install            # → { url }; then re-read status
 ren slack status             # hasInstallation: true before anything else works
 ren slack channels list      # only channels the bot can see — invite it to private ones first
 ren slack channels set <channel-id> --project-id <prj_…> \
-  --fallback-sender-user-id <usr_…>
+  --fallback-sender-user-id <usr_…>   # announces in the channel when it wasn't mapped before
 ren slack channels unset <channel-id>
 ```
 
 - One channel maps to **exactly one project**; a project can answer in many. Remapping a channel
-  silently overwrites.
+  overwrites the previous mapping, and mapping a channel that isn't currently mapped **posts a
+  "this channel is now connected" announcement into it**.
+- `set` and `unset` are mutations, never checks. Read a mapping with `ren slack channels list`; an
+  `unset` → `set` cycle to "verify" one re-announces to everyone in the channel. Never unset a
+  mapping you weren't asked to remove.
 - An archived or deleted mapped project produces an **error reply**, not silence.
 - MCP `slack` (`auth: "none"`): `slack_post_new_message`, `slack_reply_in_thread`, `slack_react`,
   `slack_read_channel_history`, `slack_read_thread`, `slack_list_channels`, `slack_list_users`,

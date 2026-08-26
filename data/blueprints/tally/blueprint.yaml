@@ -1,0 +1,10 @@
+kind: app
+name: Tally
+description: Create forms, edit them, and analyze submissions
+brandColor: "#14b8a6"
+examplePrompts:
+  - Create a simple contact form
+  - List my most recently updated published forms
+  - Show me all completed submissions for this form
+mcps:
+  - tally

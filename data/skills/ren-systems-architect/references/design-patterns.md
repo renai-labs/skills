@@ -14,6 +14,7 @@ mid-task.
 - [Where to attach a capability](#where-to-attach-a-capability)
 - [Instructions](#instructions--the-cheapest-primitive)
 - [Stores and pod databases](#stores-and-volumes)
+- [Tasks](#tasks)
 - [Triggers and sandboxes](#triggers--push-over-poll)
 - [Artifacts and blueprints](#artifacts)
 - [Working with a new user](#working-with-a-user-you-dont-know-yet)
@@ -123,6 +124,26 @@ one (`references/operations.md`).
 **Signals:** a scheduled job that would repeat itself; anything answering "what's new since last
 time"; a digest that should stay silent when nothing changed.
 
+## Tasks
+
+What is **owed**, as opposed to what is known. A memory store records that the team uses pnpm; a task
+records that migrating CI to it is still owed, and by whom. TodoWrite is the plan for this session
+and dies with it — never mirror those steps into tasks.
+
+- **List before you create.** `ren tasks list --include-done` is the dedupe read — the default hides
+  `dismissed`, and a `dismissed` twin means somebody already said no. Don't resurrect it, don't file
+  a second copy of an open one.
+- **`dismissed` is not `done`.** A rejected suggestion stays queryable: never archive it, never close
+  it as complete.
+- **Read the trail before editing someone else's task.** `ren tasks get` returns it embedded, with
+  the actor on every status change and reassignment.
+- **One tracking surface per org.** Where work is tracked is the org's preference —
+  `references/tasks.md`.
+
+**Signals:** you delivered and named a follow-up you cannot do now; a suggestion was accepted but
+nobody can act yet; the same reminder has surfaced twice in chat; a scheduled run found something
+worth keeping without waking anyone.
+
 ## Triggers — push over poll
 
 Use native or channel ingress when the source can push (`references/composition.md`). Fall back to
@@ -203,8 +224,8 @@ context.
 
 - **Redirected across pods** → write the plan to a file store both pods reach and hand over the
   reference, so the user resumes instead of being re-interviewed.
-- **Proposal declined** → one line to the memory store (_"declined a daily deploy-digest cron on
-  <date>"_). Read those before proposing again.
+- **Proposal declined** → file it as a `dismissed` task (_"daily deploy-digest cron"_). Check the
+  task list, dismissed items included, before proposing again.
 - The strict slug-keyed spec document survives **only for blueprints**, where push and the resolution
   gate need it.
 

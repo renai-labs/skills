@@ -15,6 +15,11 @@ filter. `search` uses `--sources user org registry` instead.
 
 `promote` moves private → org in place, cascading through dependencies. There is no demotion.
 
+**A private task in a shared pod stays private.** A task carries a pod or project as domain data, not
+as an ownership axis, so scoping one to a shared pod does not hand it to that pod's members the way
+the pod's own resources are shared — only an org-visible task is. Say which you are creating when it
+matters. `references/tasks.md`.
+
 **The team-sized middle is a pod, not a visibility.** _"My team needs this, the company doesn't"_ is
 answered by building in the shared pod: its members are who can reach its projects, sandbox and
 credentials. Vaults are the one thing genuinely owned by a pod

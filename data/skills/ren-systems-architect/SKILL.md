@@ -9,7 +9,9 @@ description: >-
   instructions, skills, MCPs, stores, pod databases, credentials, channels, triggers, artifacts,
   blueprints); wants to restrict, gate, or approve what a project's tools may do — "make it
   read-only", "ask me before it posts", "it shouldn't be able to delete anything"; describes
-  recurring manual work or a missing integration; or is getting started with Ren.
+  recurring manual work or a missing integration; wants something remembered as work owed rather
+  than done now — "remind me", "what's outstanding", "take care of it when you can" — or wants to
+  see, assign, update, or dismiss a task; or is getting started with Ren.
 metadata:
   tags:
     - ren
@@ -46,6 +48,9 @@ is also the only source of the current user's identity. `references/topology.md`
 | "It needs Linear / HubSpot / our calendar"     | It acts in that tool directly                                | Registry MCP, else a skill with an API key, else a custom MCP  |
 | "It should work on our repo / in our channel"  | It reads and writes where the work already happens           | Native integration: GitHub, Slack, Telegram, email, Linear     |
 | "Stop telling me about this"                   | It goes quiet without losing what was useful                 | Narrow the condition or slow the cadence, then say what changed |
+| "Remind me / we should do this later"          | An item that survives this conversation, there next time anyone opens Ren | Task, assigned to whoever owes it              |
+| "What should I look at next / what's outstanding?" | The actionable list                                      | `ren tasks list` — open and in-progress by default              |
+| "Ren, take care of it when you can"            | A task a later run picks up                                  | Task now; a trigger to drain it is a separate decision          |
 
 The middle column is the deliverable. Write it before you build.
 
@@ -55,7 +60,7 @@ The middle column is the deliverable. Write it before you build.
 | ----------------- | --------------------------------------------------- | ------------------------------------------------------------------------ |
 | **Config**        | declared, versioned, travels                         | skill, MCP, blueprint, project model, instructions                       |
 | **Volume**        | a mounted path read and written during a run        | file store, memory store, pod scratch, git repository                    |
-| **Durable state** | outlives the session, queryable or addressable      | pod database, artifact, credential (in a vault)                          |
+| **Durable state** | outlives the session, queryable or addressable      | pod database, artifact, task, credential (in a vault)                    |
 | **Delivery**      | how a run starts and where output lands             | project, channel mapping, cron trigger                                   |
 
 A **pod** is one durable sandbox plus a member set; everything in it shares that machine. A
@@ -77,7 +82,7 @@ outcome. Mechanics: `references/operations.md`. Entity rules: `ren docs model`.
 - Gate what tools may do with the project's `permission` config: read-only, approval-first, and
   locked-down asks are project permission changes. `references/permissions.md`.
 
-### The four state surfaces — pick by shape of data
+### The five state surfaces — pick by shape of data
 
 | Surface          | Holds                                                       | Reach for it when                                  |
 | ---------------- | ----------------------------------------------------------- | -------------------------------------------------- |
@@ -85,6 +90,7 @@ outcome. Mechanics: `references/operations.md`. Entity rules: `ren docs model`.
 | **File store**   | deliverables and working files; accumulates                 | the run produces something the next run builds on  |
 | **Pod database** | structured rows you query and dedupe against                | you need to know what you already saw              |
 | **Artifact**     | a browsable page at a URL                                   | the answer wants to be looked at, not read in chat |
+| **Task**         | one thing to do, with an owner, a status and a trail         | the next step outlives this conversation and someone, or a later run, has to pick it up |
 
 Both stores mount **read-write** and neither has file locks. A SQLite file, git checkout or lockfile
 on a store corrupts. Cursors and seen-ids go in a pod database.
@@ -138,6 +144,7 @@ or drive the CLI themselves.
 | `references/composition.md`     | designing ingress, or no direct connector exists                                   |
 | `references/design-patterns.md` | choosing a primitive, or a cron/store/sandbox limit could bite                     |
 | `references/artifacts.md`       | the output wants to be a page, or one needs refreshing or sharing                  |
+| `references/tasks.md`           | work is owed to someone, or before proposing something again                       |
 | `references/operations.md`      | actually creating, attaching, uploading, scheduling, or handing back a session     |
 | `references/authoring.md`       | writing a skill or a custom MCP                                                     |
 | `references/permissions.md`     | restricting what tools may do, or gating one behind the user's approval            |

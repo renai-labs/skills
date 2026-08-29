@@ -55,6 +55,7 @@ triage. No MCP carries that. The ladder ranks ways to reach a tool, not skills a
 | Pod database  | cursor and dedup ledger across scheduled runs                         |
 | File store    | deliverables that accumulate, and inputs a person dropped in          |
 | Artifact      | the answer as a page; the URL is unauthenticated                      |
+| Task          | what is still owed; the hand-off between runs, and to people          |
 
 ## Worked chains
 

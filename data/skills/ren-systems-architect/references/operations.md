@@ -12,6 +12,7 @@ flags: `ren docs commands`; the MCP transport exposes the same operations as `mc
 - [Stores and files](#stores-and-files)
 - [Pod databases](#pod-databases)
 - [Cron triggers](#cron-triggers)
+- [Tasks](#tasks)
 - [Artifacts](#artifacts)
 - [Environments](#environments)
 - [Models and instructions](#models-and-instructions)
@@ -180,6 +181,26 @@ on the next manifest refresh.
 
 Each fire opens a **fresh session** on the project with `inputMessage` as the first user turn. A
 paused sandbox wakes on demand; a `failed` one blocks the fire.
+
+## Tasks
+
+```bash
+ren tasks list                                   # open + in_progress, newest first
+ren tasks list --include-done                    # the whole history, dismissed included
+ren tasks create --title "Migrate CI to pnpm" --assigned-to-user-id <usr_…> --priority high
+ren tasks get <tsk_…>                            # the task plus its activity trail
+ren tasks update <tsk_…> --status in_progress
+ren tasks archive <tsk_…>
+```
+
+`update` is the **only** mutation path — there is no separate assign or set-status call. An omitted
+field is unchanged; an explicit `null` clears one, so unassigning goes through
+`--body '{"assignedToUserId":null}'`. Scope flags are `--pod-id`, `--project-id` (which pins the pod)
+and `--visibility private|org` on create.
+
+**List with `--include-done` before you create anything** — a `dismissed` twin is a suggestion
+somebody already turned down, and only that read shows it. `get` embeds the trail by default;
+`--include-events=false` drops it. When to reach for a task is `references/tasks.md`.
 
 ## Artifacts
 

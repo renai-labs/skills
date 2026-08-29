@@ -28,8 +28,8 @@ conversation. Re-run only after changing configuration, not because the thread g
 | `triggers`                      | cron triggers with schedules and standing instructions                           |
 
 Not in the graph — query directly: pod databases (`ren pod-databases list <pod-id>`), artifacts
-(`ren artifacts list`), Telegram chats (`ren telegram chats list`), Linear mappings
-(`ren linear mappings list`).
+(`ren artifacts list`), tasks (`ren tasks list`), Telegram chats (`ren telegram chats list`), Linear
+mappings (`ren linear mappings list`).
 
 ## Honesty rule
 

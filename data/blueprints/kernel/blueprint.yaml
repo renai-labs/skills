@@ -1,0 +1,8 @@
+kind: app
+name: Kernel
+description: Cloud browsers for agents — drive real Chromium with Playwright,
+  screenshots, and replays
+skills:
+  - browser-e2e
+mcps:
+  - kernel

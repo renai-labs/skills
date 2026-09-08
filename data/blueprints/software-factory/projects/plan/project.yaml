@@ -1,0 +1,27 @@
+name: Plan
+description: Takes a request from Slack or chat, works out what is actually
+  being asked, and writes the implementation plan on a Linear issue. Hands the
+  approved plan to Build.
+defaultModel:
+  model: claude-opus-5
+  variant: medium
+permission:
+  bash:
+    "*": allow
+    git push*: deny
+    gh pr merge*: deny
+    gh pr review*: deny
+  webfetch: allow
+mcps:
+  - slack
+  - linear
+  - linear-ren
+channels:
+  - kind: slack
+    slug: issue-intake
+    purpose: Where people report bugs and ask for things. A mention here reaches Plan.
+  - kind: linear
+    slug: issue-tracker
+    purpose: The Linear project the factory works in. Mentioning Ren on an issue
+      reaches Plan.
+buildOrder: 1

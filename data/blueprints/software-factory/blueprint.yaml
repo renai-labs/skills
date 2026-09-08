@@ -1,7 +1,7 @@
 kind: pod
 name: Software Factory
-description: A Linear issue goes in. A reviewed PR, a tested build, and a docs
-  page come out.
+description: A request goes in. A planned, built, reviewed, and tested pull
+  request comes out, ready for you to merge.
 brandColor: "#0f172a"
 categories:
   roles:
@@ -20,16 +20,15 @@ categories:
   verticals:
     - engineering-factory
 examplePrompts:
-  - Here is a bug report from Slack. Triage it and draft a plan on the Linear
-    issue.
-  - Run the approved REN-123 plan through the belt. Prepare and assign its Build
-    task.
-  - What did the factory learn this week? Read the memory store and summarise.
+  - Here is a bug report from Slack. Work out what is wrong and plan the fix on
+    Linear.
+  - REN-123 is approved. Build it.
+  - What did we ship yesterday, and did anything move in production after it?
 pod:
   name: Software Factory
-  description: "Six stations: Issues, Build, Review, QA, Docs, Monitoring. Linear
-    holds the work record. Assigning prepared tasks starts agents in the
-    receiving project context."
+  description: Plan, Build, Review, QA, and Monitoring. Linear holds the issue and
+    its plan, GitHub holds the code and the review, and Ren tasks move work
+    between projects.
   defaultModel:
     model: claude-opus-5
     variant: null

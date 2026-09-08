@@ -1,425 +1,57 @@
 name: Monitoring
-description: Watches PostHog and reports product metrics on linked Linear
-  issues. Keeps the repository's telemetry and third-party dependency
-  inventories, and watches those dependencies' status pages. Hosts factory-wide
-  learning schedules; Issues owns planning.
+description: "Runs the factory's scheduled work: watching what recent releases
+  did to production, keeping the docs in step with what shipped, and
+  consolidating what the factory learned."
 defaultModel:
   model: claude-opus-5
   variant: null
 permission:
   bash:
     "*": allow
-    git push*: deny
-    git*push*: deny
-    gh pr close*: deny
     gh pr merge*: deny
-    gh api*/merge*: deny
+    git push*-f*: deny
+    gh pr review*: deny
     git branch -D*: deny
     gh repo delete*: deny
-    gh pr review*-a*: deny
-    ren orgs update*: deny
-    ren pods update*: deny
-    gh api*-X DELETE*: deny
-    ren projects update*: deny
-    gh api*--method DELETE*: deny
-    gh pr review*--approve*: deny
+    git push*--force*: deny
   webfetch: allow
 skills:
-  - factory-handoff
+  - release-monitoring
+  - docs-maintenance
   - agent-dreaming
 mcps:
   - posthog
+  - context7
   - linear
   - slack
 triggers:
-  - slug: production-sweep
-    model:
-      model: claude-opus-5
-      variant: null
-    schedule: 0 * * * *
-    inputMessage: "Run the hourly production sweep. Part one, every run: read
-      engineering/dependencies.md in the memory store for the watched vendors,
-      their status page URLs, and the Linear issue each one is linked to. Fetch
-      each status page or status API and read the last hour of incidents. For a
-      vendor with a new or changed incident, comment once on its linked Linear
-      issue with the vendor, component, impact, vendor incident link, and start
-      time, and ask the verified incident owner through the recorded Slack
-      destination to review it. Reuse an existing comment for an unchanged
-      incident. Part two, only on the first run of the team's working day in
-      team/people.md: read product/decisions.md for the funnels to watch and the
-      Linear issue each one is linked to. Query each funnel for the last 24
-      hours. Comment on the linked Linear issue with the numbers and any change
-      worth a sentence; if that issue already has today's funnel comment, skip
-      it. Do not create issues. Do not change flags. Do not touch the
-      repository."
-  - slug: memory-capture
-    model:
-      model: gpt-6-astra
-      variant: low
-    schedule: 0 */4 * * *
-    inputMessage: Run live memory-capture from the agent-dreaming skill. Before any
-      memory write, pass its authorization, session-coverage, and
-      exclusive-execution gates. Exclusive execution must cover capture,
-      maintenance, and manual dream runs for this pod/store. Separate cron
-      schedules do not provide this protection. If a gate cannot be verified,
-      make no memory writes and report the blocker through the skill's
-      human-hold procedure. Follow the skill for session filtering, append-only
-      observations, inbox promotion, and safe cursor advancement. Ownership
-      lasts until confirmed execution end, including child/tools and pending
-      uploads; uncertainty blocks release and replacement runs. Follow the
-      skill's execution lifetime rule on success and failure.
-  - slug: memory-maintenance
-    model:
-      model: gpt-6-astra
-      variant: medium
-    schedule: 0 6 * * 1
-    inputMessage: Run live memory-maintenance from the agent-dreaming skill. Before
-      any memory write, pass its authorization, capability, and
-      exclusive-execution gates. Use the same verified protection as capture and
-      manual dream runs for this pod/store. Never create a memory-store
-      lockfile. If exclusive execution cannot be verified, make no memory writes
-      and report the blocker through the skill's human-hold procedure. Follow
-      the skill for a verified snapshot before rewrites, sourced consolidation,
-      stale/archive transitions, layout-only AGENTS.md, human proposals, and
-      retry-safe retro posting. Ownership lasts until confirmed execution end,
-      including child/tools and pending uploads; uncertainty blocks release and
-      replacement runs. Follow the skill's execution lifetime rule on success
-      and failure.
-tasks:
-  - slug: inventory-telemetry
-    title: 06d · Inventory the repository's telemetry and observability tools
-    labels:
-      - onboarding
-    priority: high
-    description: >
-      Needs tasks 01 and 03 on Issues. In an owner-present Monitoring chat, read
-      those tasks and
-
-      their evidence before marking this task in_progress. Do not clear/reassign
-      seeded tasks to
-
-      launch setup. GitHub, Linear, and Slack access were verified in tasks 03,
-      04, and 05; do
-
-      not re-verify them here.
-
-
-      Check out a worktree under `/tmp/factory/onboarding-monitoring/` from the
-      default branch of
-
-      the `repo` reference. Read the entire repository, not one package: every
-      manifest
-
-      (`package.json`, `pyproject.toml`, `go.mod`, `Cargo.toml`, `Gemfile`, and
-      similar), lockfile,
-
-      Dockerfile, CI workflow, infrastructure config, and `.env.example`. Find
-      every telemetry and
-
-      observability tool the code uses: product analytics, error tracking,
-      tracing, metrics, log
-
-      shipping, uptime checks, session replay, feature flags, alerting. Search
-      imports and SDK
-
-      names as well as manifests; a tool wired through an environment variable
-      or a raw HTTP call
-
-      has no package entry. For each tool record: name, purpose, the packages
-      and files that
-
-      wire it, the environment variables it needs, the dashboards or projects it
-      reports to, and
-
-      whether Monitoring has an MCP or API for it. Ask the owner to confirm the
-      list, name the
-
-      owner of each tool, and say which ones are live in production.
-
-
-      Write `engineering/telemetry.md` in the memory store with that inventory.
-      Do not write
-
-      secrets or credential values; name the variable, not its value. Remove the
-      clean worktree.
-
-      This task and 06f are the ordinary writes outside `inbox/monitoring/` that
-      Monitoring makes.
-
-
-      Done when `engineering/telemetry.md` exists, covers the whole repository,
-      and the owner has
-
-      confirmed every entry and the tools that are live. PostHog connection is
-      task 06e.
-  - slug: connect-posthog
-    title: 06e · Connect PostHog on Monitoring
-    labels:
-      - onboarding
-    priority: high
-    description: >
-      Needs tasks 01, 02, 04, and 05 on Issues and task 06d on Monitoring. Read
-      those tasks and
-
-      their evidence in an owner-present Monitoring chat before marking this
-      task in_progress.
-
-      Do not clear/reassign seeded tasks to launch setup. Keep production-sweep
-      and both dream
-
-      triggers disabled during setup. Linear and Slack access were verified in
-
-      tasks 04 and 05; do not re-verify them here.
-
-
-      With the owner, connect the PostHog MCP on Monitoring. Confirm the PostHog
-      project matches
-
-      the one recorded in `engineering/telemetry.md`. Ask which PostHog funnels
-      matter and which
-
-      existing Linear issue each belongs to. Write the approved funnel/issue
-      pairs in
-
-      `product/decisions.md`, preserving any other product decisions. A funnel
-      with no issue is
-
-      not watched. Confirm the intended PostHog project and read-only access.
-
-      The registry compiler currently drops MCP-specific permission overrides.
-      Authored denies do
-
-      not prove runtime enforcement. Have the owner inspect live project/tool
-      permissions and
-
-      provider access before any unattended activation. Record the verified
-      read-only configuration;
-
-      do not make a production mutation to test it. Missing safe access leaves
-      this task blocked.
-
-
-      From Monitoring, run `insights-get-all`, query a watched funnel, and read
-      its linked Linear
-
-      issue. Record the session and check results here.
-
-
-      Done when the PostHog query and Linear read pass and at least one
-      owner-approved funnel has
-
-      a verified issue link. Missing access or prerequisites leave this task
-      incomplete; use
-
-      factory-handoff's human hold on this same task and do not enable the
-      sweep.
-  - slug: inventory-dependencies
-    title: 06f · Inventory third-party service dependencies and link their status
-      alerts
-    labels:
-      - onboarding
-    priority: high
-    description: >
-      Needs task 06d on Monitoring. Owner-present Monitoring chat. Mark this
-      task in_progress
-
-      before work; do not clear/reassign seeded tasks to launch setup.
-
-
-      Check out a worktree under `/tmp/factory/onboarding-monitoring/` from the
-      default branch.
-
-      Read the entire repository again, this time for external services the
-      product depends on at
-
-      runtime: payment providers, model and inference gateways, email and SMS
-      senders, auth
-
-      providers, object storage, databases and queues as a service, CDNs,
-      search, maps, and any
-
-      other paid or hosted API. Telemetry tools from task 06d are not repeated
-      here. Search SDK
-
-      imports, base URLs, webhook handlers, and environment variables, not only
-      manifests. For
-
-      each service record: name, what the product uses it for, the packages and
-      files that wire
-
-      it, the environment variables it needs, the public status page or status
-      API URL, and the
-
-      failure impact in one sentence. Ask the owner to confirm the list, drop
-      anything not live in
-
-      production, and name the owner of each service.
-
-
-      Write `engineering/dependencies.md` in the memory store with that
-      inventory. Do not write
-
-      secrets or credential values. Then ask the owner to create, or name an
-      existing, Linear
-
-      issue per watched service in the factory project, titled `Vendor status:
-      <service>`, and
-
-      record its key next to the service. Monitoring never creates issues,
-      including here. Fetch
-
-      each status page once from Monitoring and confirm it answers; a service
-      with no reachable
-
-      status page is recorded as unwatched. Post one dry
-
-      report for a real current or past vendor incident as a comment on that
-      service's issue so
-
-      the owner can approve the shape. Remove the clean worktree.
-
-
-      Done when `engineering/dependencies.md` exists, every watched service has
-      a confirmed status
-
-      URL and a linked Linear issue, the owner has approved the report shape,
-      and production-sweep
-
-      remains disabled. Task 09 enables it.
-  - slug: enable-sweeps
-    title: 09 · Enable the hourly production sweep with the team timezone
-    labels:
-      - onboarding
-    priority: high
-    description: >
-      Needs task 08 (dry-run-the-belt) on Issues and tasks 06e (connect-posthog)
-      and 06f
-
-      (inventory-dependencies) on Monitoring. The owner opens a Monitoring chat
-      and verifies
-
-      those tasks and their evidence before work. Mark this eligible task
-      in_progress; do not
-
-      clear/reassign seeded tasks to launch setup.
-
-
-      Set the timezone on `production-sweep` from `team/people.md`. Dry-run it
-      by hand first:
-
-      open a chat on Monitoring and paste the trigger's input message, once as
-      an ordinary hour
-
-      and once as the first run of the working day so both parts are exercised.
-      Explicitly
-
-      request read-only dry runs, with no Linear, Slack, or memory writes. Check
-      the proposed
-
-      comments with the owner. Then enable only production-sweep with the
-      owner's authorization.
-
-      This does not enable the factory-wide dream triggers hosted here.
-
-
-      Done when the trigger shows enabled, its first real run reads every status
-      page, and the
-
-      first working-day run comments on each watched funnel issue, without
-      creating any issues.
-  - slug: enable-dream
-    title: 10 · Enable memory-capture and memory-maintenance
-    labels:
-      - onboarding
-    priority: high
-    description: >
-      Needs task 08 (dry-run-the-belt) on Issues. This is factory-wide learning
-      setup, hosted on
-
-      Monitoring because schedules require a project target. The owner opens a
-      Monitoring chat,
-
-      verifies task 08 and its evidence, and marks this eligible task
-      in_progress before work.
-
-      Do not clear/reassign seeded tasks to launch setup. All six stations
-      contribute their own
-
-      inbox notes; capture and maintenance cover the whole pod, not just
-      Monitoring.
-
-
-      The current Ren implementation does not provide this dream execution
-      capability or a verified
-
-      completed-run inventory. The installer can enable schedules anyway; an
-      enabled toggle is
-
-      not evidence of enforced prerequisites. Do not enable either dream
-      schedule on that basis.
-
-      Use read-only dry runs and keep this task blocked until a supported
-      platform implementation
-
-      passes the checks below. Manual owner approval alone does not supply the
-      missing capability.
-
-
-      Keep both dream triggers disabled during setup. With the owner, verify a
-      platform-supported
-
-      exclusive-execution mechanism for this pod/store that covers capture,
-      maintenance, and manual
-
-      dream runs. Record its supported operation, scope, ownership, lifetime,
-      and failure/release
-
-      behavior in the onboarding task. Separate cron overlap settings,
-      active-session checks, and
-
-      memory-store lockfiles are not substitutes. If protection is unavailable,
-      keep this task on a
-
-      human hold and leave both triggers disabled; do not claim automatic
-      learning is ready.
-
-
-      Explicitly request read-only dry runs of capture and maintenance using
-      `agent-dreaming`.
-
-      Check session coverage, dream-session exclusion, and the proposed changes.
-      Then request
-
-      owner-authorized manual live runs under the verified protection. Read the
-      captured insights;
-
-      record any correction under `inbox/monitoring/` rather than changing the
-      skill or doctrine.
-
-      Confirm maintenance verifies a snapshot before rewrites and preserves
-      sourced knowledge.
-
-      Test that an overlapping capture, maintenance, or manual run cannot write.
-      Confirm protection
-
-      covers the actual agent execution, child sessions, background tools, and
-      pending store uploads.
-
-      Confirm an uncertain stop blocks both release and retry, even after a
-      workflow timeout or lease
-
-      expiry. Release must follow confirmed execution end on success and
-      failure. Check that retries
-
-      do not duplicate observations or digests. Never destroy the shared sandbox
-      to pass these tests.
-
-      Enable both triggers with the team timezone only after these checks pass.
-
-
-      Done when this task links the gate and overlap/retry test evidence,
-      `dream/backups/` holds a
-
-      verified snapshot, and both triggers show enabled. A missing prerequisite
-      leaves it blocked.
-buildOrder: 6
+  - slug: release-monitoring
+    schedule: 0 */3 * * *
+    inputMessage: "Check what the last 24 hours of merges did to production. Follow
+      the release-monitoring skill: read what merged, work out what those
+      changes could plausibly affect, and look at the telemetry that would show
+      it. You are looking for effects nobody would have reported, like a slow
+      query, a cost or latency change, a funnel that quietly dropped, or a
+      resource that keeps growing. Explicit errors already reach the team
+      through their own alerting, so do not repeat them. If you find something
+      worth acting on, post it in the engineering channel with the evidence and
+      what you think caused it. If nothing moved, finish without posting."
+  - slug: docs-maintenance
+    schedule: 0 4 * * *
+    inputMessage: "Bring the documentation up to date with what merged yesterday.
+      Follow the docs-maintenance skill: read the merges, find the documentation
+      in the repository that is now wrong or missing, and fix it using whatever
+      docs setup the repository already has. Update the existing open Ren
+      documentation pull request for each repository if there is one, otherwise
+      open one, and say in the engineering channel what changed. If nothing that
+      merged affects the docs, finish quietly."
+  - slug: memory-consolidation
+    schedule: 0 4 * * *
+    inputMessage: "Consolidate what the factory learned yesterday. Follow the
+      agent-dreaming skill: read yesterday's sessions across the projects in
+      this pod, keep the corrections people made, the product rules, and the
+      engineering traps that will matter again, and write them into the shared
+      memory store. Merge duplicates, and retire anything the code or the team
+      has since contradicted. Keep it short enough that the other projects can
+      read it before every run."
+buildOrder: 5

@@ -1,6 +1,7 @@
 name: QA
-description: Runs the app in the sandbox and tests it from a Kernel browser.
-  Starts in this project when an open stage:qa task is assigned to its agent.
+description: "Runs the change and tries to break it: the app in the sandbox, the
+  browser on Kernel. Marks the pull request ready when it holds up. Starts when
+  a task is assigned to it."
 defaultModel:
   model: claude-opus-5
   variant: null
@@ -8,125 +9,16 @@ permission:
   bash:
     "*": allow
     git push*: deny
-    git*push*: deny
     gh pr close*: deny
     gh pr merge*: deny
-    gh api*/merge*: deny
+    gh pr review*: deny
     git branch -D*: deny
     gh repo delete*: deny
-    gh pr review*-a*: deny
-    ren orgs update*: deny
-    ren pods update*: deny
-    gh api*-X DELETE*: deny
-    ren projects update*: deny
-    gh api*--method DELETE*: deny
-    gh pr review*--approve*: deny
   webfetch: allow
 skills:
-  - factory-handoff
-  - agent-dreaming
   - e2e-verification
-  - browser-e2e
 mcps:
   - kernel
   - linear
   - slack
-tasks:
-  - slug: connect-kernel
-    title: 06a · Connect Kernel on QA
-    labels:
-      - onboarding
-    priority: high
-    description: >
-      Needs tasks 01, 03, 04, and 05 on Issues. In an owner-present QA chat,
-      read those tasks and
-
-      their evidence before marking this task in_progress. Do not clear/reassign
-      seeded tasks to
-
-      launch setup. GitHub, Linear, and Slack access were verified there; do not
-      re-verify them.
-
-
-      With the owner, connect the Kernel MCP on QA. Verify
-      `kernel_manage_browsers` returns without
-
-      an auth error. Serve a static page from this sandbox on a free port, get
-      its public sandbox
-
-      URL, and open it from a Kernel browser with
-      `kernel_execute_playwright_code`. Take one
-
-      screenshot. Confirm `kernel_manage_replays` can start and stop a replay.
-      Stop the page server
-
-      and close the browser.
-
-
-      Record the session ID and each check result on this task. Missing access
-      is a blocker: use
-
-      `factory-handoff`'s human hold on this task. Do not create Kernel keys,
-      proxies, or profiles.
-
-
-      Done when both Kernel checks and the replay check pass from QA, and no
-      browser or server is
-
-      left running.
-  - slug: verify-qa-evidence
-    title: 06b · Verify the private QA evidence route
-    labels:
-      - onboarding
-    priority: high
-    description: >
-      Needs task 06a on QA. Owner-present QA chat. Mark this task in_progress
-      before work; do not
-
-      clear/reassign seeded tasks to launch setup.
-
-
-      Verify private evidence retention with the owner. Inspect the supported
-      attachment
-
-      operations available to QA. If Linear cannot attach files privately,
-      configure an existing
-
-      supported private store route that QA is authorized to use. Do not invent
-      file-store APIs or
-
-      treat a local filesystem path as an upload. Record the operation,
-      destination, access controls,
-
-      retention settings, and intended reviewers under "QA evidence" in
-      `engineering/preferences.md`,
-
-      preserving task 05's "Linear limits". This is the only ordinary write
-      outside `inbox/qa/`
-
-      that QA ever makes.
-
-
-      Upload synthetic evidence with no customer data or secrets using that
-      route, link it on the
-
-      task 05 test issue, and read it back. Have an intended reviewer open the
-      link with their own
-
-      authorized access and confirm success. Record the evidence link and
-      access-check result on
-
-      this onboarding task. No public artifacts, anonymous shares, or ad-hoc
-      public servers.
-
-      If no supported private route or reviewer access can be verified, hold
-      this task for a human;
-
-      do not mark evidence setup complete or allow QA signoff.
-
-
-      Done when the synthetic evidence upload, read-back, and intended reviewer
-      access checks all
-
-      pass and the "QA evidence" record exists in `engineering/preferences.md`.
 buildOrder: 4

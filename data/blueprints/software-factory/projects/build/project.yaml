@@ -1,0 +1,90 @@
+name: Build
+description: Turns an approved plan into a pull request. Starts in this project
+  when an open stage:build task is assigned to its agent.
+defaultModel:
+  model: gpt-6-astra
+  variant: xhigh
+permission:
+  bash:
+    "*": allow
+    git push*-f: deny
+    gh pr close*: deny
+    gh pr merge*: deny
+    git push* :*: deny
+    git push*-f *: deny
+    gh api*/merge*: deny
+    git branch -D*: deny
+    git branch -d*: deny
+    gh repo delete*: deny
+    gh api*/reviews*: deny
+    gh pr review*-a*: deny
+    ren orgs update*: deny
+    ren pods update*: deny
+    gh api*-X DELETE*: deny
+    git push*--force*: deny
+    git*push*--force*: deny
+    git push*--delete*: deny
+    ren projects update*: deny
+    gh api*--method DELETE*: deny
+    gh pr review*--approve*: deny
+  webfetch: allow
+skills:
+  - factory-handoff
+  - agent-dreaming
+  - code-quality
+  - github-pr-workflow
+mcps:
+  - linear
+  - slack
+tasks:
+  - slug: fill-engineering-notes
+    title: 07 · Fill engineering/preferences.md and engineering/edge-cases.md from
+      the owner
+    labels:
+      - onboarding
+    priority: high
+    description: >
+      Needs task 03 on Issues, task 06b (verify-qa-evidence) on QA, and task 06d
+      (review-baseline)
+
+      on Review. Owner-present Build chat. Mark this task in_progress before
+      work; do not
+
+      clear/reassign seeded tasks to launch setup. Connections were verified in
+      tasks 03, 04, and
+
+      05; do not re-verify them here.
+
+
+      Ask the owner: code style, test command, how to start the app and on what
+      port, secrets the
+
+      app needs in the sandbox, commit format, PR body shape, branches to never
+      touch, files to
+
+      never edit, known traps in the codebase, past incidents worth remembering.
+      Update
+
+      `engineering/preferences.md` and `engineering/edge-cases.md`, preserving
+      task 05's "Linear limits",
+
+      task 06b's "QA evidence", and task 06d's "Review baseline" records. Check
+      out a worktree
+
+      under `/tmp/factory/onboarding-build/`, read the repository's own
+      `AGENTS.md`,
+
+      `CONTRIBUTING.md`, and CI config, and fold in what they say. Run the
+      recorded test command
+
+      once in the worktree to confirm it is the right one, then remove the clean
+      worktree. This is
+
+      the only ordinary write outside `inbox/build/` that Build ever makes.
+
+
+      Done when both files exist, the test command in them runs from Build, and
+      QA can start the
+
+      app in the sandbox from them alone (QA confirms this in task 08).
+buildOrder: 2

@@ -6,8 +6,8 @@ description: >-
   connected — "make a dashboard of our daily commits", "post a summary every morning", "tell me when
   this repo breaks", "it should read our customer list" — or asks what exists or is connected; wants
   to create, change, debug, publish, install, or remove a Ren resource (pods, projects, project
-  instructions, skills, MCPs, stores, pod databases, credentials, channels, triggers, artifacts,
-  blueprints); wants to restrict, gate, or approve what a project's tools may do — "make it
+  instructions, skills, MCPs, stores, pod databases, credentials, channels, triggers, artifacts);
+  wants to restrict, gate, or approve what a project's tools may do — "make it
   read-only", "ask me before it posts", "it shouldn't be able to delete anything"; describes
   recurring manual work or a missing integration; wants something remembered as work owed rather
   than done now — "remind me", "what's outstanding", "take care of it when you can" — or wants to
@@ -41,7 +41,7 @@ is also the only source of the current user's identity. `references/topology.md`
 | "It should know our stuff"                     | Answers that already assume the company's facts              | Instructions at the widest layer where the fact is true        |
 | "It keeps forgetting what I told it"           | Next run picks up where this one left off                    | Memory store, read at start and written at the end             |
 | "I want to look at this, not read it"          | A page at a URL that refreshes itself                        | Artifact, rebuilt on the same schedule as its data             |
-| "My team needs this too"                       | Teammates get it without a hand-off conversation             | Build in the shared pod, or hand over a blueprint              |
+| "My team needs this too"                       | Teammates get it without a hand-off conversation             | Build in the shared pod                                         |
 | "It dies when I close my laptop"               | It keeps running, and they read the result later             | A pod: durable sandbox, sessions they can reopen               |
 | "I keep re-pasting the same API key"           | Connected once, Ren can use it in the pod                    | A credential in the vault the pod resolves                     |
 | "Here's our pricing sheet / customer list"     | Ren works from their material, not generic knowledge         | File store attached to the project                             |
@@ -58,7 +58,7 @@ The middle column is the deliverable. Write it before you build.
 
 | Kind              | Nature                                              | Primitives                                                               |
 | ----------------- | --------------------------------------------------- | ------------------------------------------------------------------------ |
-| **Config**        | declared, versioned, travels                         | skill, MCP, blueprint, project model, instructions                       |
+| **Config**        | declared, versioned, travels                         | skill, MCP, project model, instructions                                  |
 | **Volume**        | a mounted path read and written during a run        | file store, memory store, pod scratch, git repository                    |
 | **Durable state** | outlives the session, queryable or addressable      | pod database, artifact, task, credential (in a vault)                    |
 | **Delivery**      | how a run starts and where output lands             | project, channel mapping, cron trigger                                   |
@@ -150,7 +150,6 @@ or drive the CLI themselves.
 | `references/permissions.md`     | restricting what tools may do, or gating one behind the user's approval            |
 | `references/credentials.md`     | a skill or MCP needs auth, or one stopped working                                  |
 | `references/channels.md`        | wiring Slack, Telegram, email, GitHub or Linear, or posting to them                |
-| `references/blueprints.md`      | packaging a setup for reuse, or installing one                                     |
 | `references/comparison.md`      | the user asks "why not just Zapier / ChatGPT / Claude Code"                        |
 
 `ren docs model`, `ren docs integrations`, `ren docs commands` are the platform's own truth — read

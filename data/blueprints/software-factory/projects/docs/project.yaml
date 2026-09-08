@@ -1,0 +1,95 @@
+name: Docs
+description: Writes the documentation page for a merged change and opens the
+  docs PR. Starts in this project when an open stage:docs task is assigned to
+  its agent.
+defaultModel:
+  model: claude-fable-5-1
+  variant: medium
+permission:
+  bash:
+    "*": allow
+    git push*-f: deny
+    gh pr close*: deny
+    gh pr merge*: deny
+    git push* :*: deny
+    git push*-f *: deny
+    gh api*/merge*: deny
+    git branch -D*: deny
+    git branch -d*: deny
+    gh repo delete*: deny
+    gh api*/reviews*: deny
+    gh pr review*-a*: deny
+    ren orgs update*: deny
+    ren pods update*: deny
+    gh api*-X DELETE*: deny
+    git push*--force*: deny
+    git*push*--force*: deny
+    git push*--delete*: deny
+    ren projects update*: deny
+    gh api*--method DELETE*: deny
+    gh pr review*--approve*: deny
+  webfetch: allow
+skills:
+  - factory-handoff
+  - agent-dreaming
+  - docs-frameworks
+  - technical-writing
+  - github-pr-workflow
+mcps:
+  - linear
+  - context7
+  - slack
+tasks:
+  - slug: detect-docs-toolchain
+    title: 06c · Detect the docs framework and verify its build on Docs
+    labels:
+      - onboarding
+    priority: high
+    description: >
+      Needs task 03 on Issues. Owner-present Docs chat. Mark this task
+      in_progress before work; do
+
+      not clear/reassign seeded tasks to launch setup. GitHub, Linear, and Slack
+      access were
+
+      verified in tasks 03, 04, and 05; do not re-verify them here.
+
+
+      Check out a worktree under `/tmp/factory/onboarding-docs/` from the
+      default branch. Detect
+
+      the docs framework with `docs-frameworks`. Ask the owner to confirm the
+      docs root and the
+
+      framework if detection is ambiguous or finds nothing; a repository with no
+      docs site is a
+
+      valid answer and Docs then produces "no docs change" results only. Install
+      the framework's
+
+      dependencies in the worktree, run its build and link check once, and
+      confirm both succeed on
+
+      the unchanged default branch. Confirm `context7` answers a query about
+      that framework.
+
+      Remove the clean worktree.
+
+
+      Record the session ID, the detected framework, its docs root, and the
+      build and link-check
+
+      commands on this task. Do not write them to the memory store; Build folds
+      them into
+
+      `engineering/preferences.md` in task 07. A red build on the default branch
+      is a blocker: use
+
+      `factory-handoff`'s human hold on this task.
+
+
+      Done when framework detection, a green build and link check (or a
+      confirmed no-docs-site
+
+      result), and the `context7` query all pass from Docs.
+buildOrder: 5

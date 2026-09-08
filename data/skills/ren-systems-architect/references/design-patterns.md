@@ -16,7 +16,7 @@ mid-task.
 - [Stores and pod databases](#stores-and-volumes)
 - [Tasks](#tasks)
 - [Triggers and sandboxes](#triggers--push-over-poll)
-- [Artifacts and blueprints](#artifacts)
+- [Artifacts](#artifacts)
 - [Working with a new user](#working-with-a-user-you-dont-know-yet)
 - [Planning and delivery](#the-plan-you-keep)
 
@@ -186,11 +186,6 @@ handing it over. `references/artifacts.md`; how to build one is in Ren's `ren-ar
 **Signals:** you just put a forty-row table in a message; the same summary is due again next week; the
 user says "send me a link" or asks to show someone else.
 
-## Blueprints are demand-driven
-
-Never proposed proactively. A blueprint happens when the user says share, reuse, or give this to
-others.
-
 ## Missing credentials
 
 Name the service, name the place, never ask in chat. The destination follows from the pod.
@@ -226,9 +221,6 @@ context.
   reference, so the user resumes instead of being re-interviewed.
 - **Proposal declined** → file it as a `dismissed` task (_"daily deploy-digest cron"_). Check the
   task list, dismissed items included, before proposing again.
-- The strict slug-keyed spec document survives **only for blueprints**, where push and the resolution
-  gate need it.
-
 ## Build order
 
 Build leaf-up and verify each result before moving on: **environment → project → instructions and

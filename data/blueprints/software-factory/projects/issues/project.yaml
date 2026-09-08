@@ -1,0 +1,407 @@
+name: Issues
+description: Front door. Takes issues in from people and from production,
+  classifies, plans in Linear.
+defaultModel:
+  model: claude-opus-5
+  variant: medium
+permission:
+  bash:
+    "*": allow
+    git push*: deny
+    gh pr merge*: deny
+    gh repo delete*: deny
+    ren orgs update*: deny
+    ren pods update*: deny
+    gh pr review*--approve*: deny
+    ren projects update*permission*: deny
+    ren projects update*--instructions*: deny
+  webfetch: allow
+skills:
+  - factory-handoff
+  - agent-dreaming
+  - issue-triage
+  - issue-dedup
+  - plan-iteration
+  - github-issues
+mcps:
+  - slack
+  - linear
+  - linear-ren
+channels:
+  - kind: slack
+    slug: issue-intake
+    purpose: Where people report bugs and ask for features. A mention wakes Issues.
+  - kind: slack
+    slug: incident-channel
+    purpose: Where Issues posts one line per new production incident and the weekly
+      retro digest.
+  - kind: linear
+    slug: issue-tracker
+    purpose: The Linear project the factory works from. Assigning or mentioning Ren
+      on an issue wakes Issues.
+tasks:
+  - slug: create-memory-store
+    title: 01 · Create the factory-memory store and write its AGENTS.md
+    labels:
+      - onboarding
+    priority: high
+    description: >
+      First task. Nothing else works without the store.
+
+
+      Create a memory store named `factory-memory`, visible to the org. Attach
+      it to all six
+
+      projects in this pod: Issues, Build, Review, QA, Docs, Monitoring. Write
+      `AGENTS.md` at its root with the
+
+      layout from the `agent-dreaming` skill. `AGENTS.md` describes the folders.
+      It carries no
+
+      rules. Create the empty folders: `team/`, `product/`, `engineering/`,
+      `incidents/`,
+
+      `inbox/issues/`, `inbox/build/`, `inbox/review/`, `inbox/qa/`,
+      `inbox/docs/`, `inbox/monitoring/`, `dream/insights/`,
+
+      `dream/proposals/`, `dream/retro/`, `dream/backups/`. Write
+      `dream/last-run.md` with the
+
+      current time.
+
+
+      Done when `ls /volumes/factory-memory` on each of the six projects shows
+      the layout.
+  - slug: interview-owner
+    title: 02 · Interview the owner and fill team/people.md and team/slack-routing.md
+    labels:
+      - onboarding
+    priority: high
+    description: >
+      Needs task 01.
+
+
+      Ask the owner who is on the team: name, role, Slack handle, GitHub handle,
+      Ren user id, areas
+
+      owned. Ask who approves plans, who merges, who is paged for incidents.
+      Confirm each of those
+
+      people is a member of this pod; a task cannot be assigned to someone who
+      is not. Write
+
+      `team/people.md` and `team/slack-routing.md` in the memory store. Ask for
+      the team's timezone
+
+      and working hours and write them at the top of `team/people.md`.
+
+
+      Done when both files exist, name at least one person for plan approval and
+      one for incidents,
+
+      and every named person is a pod member.
+  - slug: bind-repository
+    title: 03 · Bind the code repository to Build, Review, QA, Docs, and Monitoring
+    labels:
+      - onboarding
+    priority: high
+    description: >
+      Needs task 02.
+
+
+      Ask the owner for the repository (`owner/name`) and the default branch.
+      Add it as a `references`
+
+      entry named `repo` on Build, Review, QA, Docs, and Monitoring. Monitoring
+      reads the repository
+
+      for its telemetry and dependency inventories; it never pushes. Confirm the
+      GitHub app is installed on the
+
+      repository. Keep the repository mapping on Review for access and explicit
+      PR mentions, but
+
+      disable automatic PR review with the supported mapping field
+      `prListenerEnabled: false`.
+
+      Have an org admin read `github.mappings.list`, then use
+      `github.mapping.set`
+
+      (PUT /github/repos/:repoId/mapping relative to the API base) with the
+      existing installationId,
+
+      repoFullName, Review projectId, fallbackSenderUserId, and prListenerPrompt
+      preserved and
+
+      prListenerEnabled false. Read installed API/CLI help for the supported
+      transport; do not
+
+      invent a CLI flag. Read the mapping list back and record repoId,
+      projectId, and false value.
+
+      Do not remove the mapping or rely only on the global auto-run switch.
+      Missing admin access
+
+      or a read-back mismatch is a human hold; this task cannot pass with
+      auto-run enabled.
+
+      Factory PR mentions must point to the task and stop, never claim prepared
+      or active work.
+
+      Draft/Ready is visual progress, not an event trigger. Only task
+      assignments hand off factory
+
+      work, including bot-authored PRs and repair pushes. Ask the owner to turn
+      on branch protection
+
+      for the default branch with at least one required human review, required
+      checks, and stale
+
+      approval dismissal on new commits; recheck live settings. Branch
+      protection is the real
+
+      merge guard, not station instructions or Draft/Ready.
+
+
+      Done when `ren projects get` for each of the five shows the reference,
+      Review shows the
+
+      GitHub mapping with `prListenerEnabled: false` verified from the mapping
+      list, and
+
+      `gh auth status` and `gh pr list` both succeed from a chat on Build. That
+      check is done once;
+
+      no station re-verifies it.
+  - slug: map-slack-channels
+    title: "04 · Map the Slack channels: intake and incident"
+    labels:
+      - onboarding
+    priority: high
+    description: >
+      Needs task 02.
+
+
+      Ask the owner which Slack channels are for issue intake and which is for
+      incidents. Map each to
+
+      Issues. Several intake channels are fine. Post one test message in each
+      and confirm it arrived.
+
+      Record the incident destination in `team/slack-routing.md`; every station
+      uses it for
+
+      needs:human escalations. Confirm once that Build, Review, QA, Docs, and
+      Monitoring can post
+
+      to the incident channel; no station re-verifies it later.
+
+
+      Done when a mention of Ren in an intake channel opens a session on Issues,
+      and a test post from
+
+      Build lands in the incident channel.
+  - slug: connect-linear
+    title: 05 · Connect Linear, map the project, and ask for the workflow states
+    labels:
+      - onboarding
+    priority: high
+    description: >
+      Needs task 02.
+
+
+      Connect the Linear MCP and the Linear agent app. Map the team's Linear
+      project to Issues. Ask
+
+      the owner to create these workflow states in the Linear team, in this
+      order: `Triage`,
+
+      `Planning`, `Build`, `Review`, `QA`, `QA passed`, `Docs`, `Done`. Ask them
+      to turn on the
+
+      Linear GitHub integration so a branch named with the issue key attaches
+      its PR. Record the
+
+      Linear team id and project id in `team/people.md`.
+
+
+      The plan always lives under `## Plan` in the Linear issue description,
+      with `## Done when`,
+
+      `## Do not`, and a revision number. It is never a separate Linear
+      document. Verify each
+
+      station's required read, update, and comment operations against its
+      installed tools and
+
+      permissions once, here. Record unsupported operations in
+      `engineering/preferences.md` under
+
+      "Linear limits".
+
+
+      Private QA evidence retention is QA's task 06b, not part of this one.
+      Leave the test issue
+
+      open; 06b and Monitoring's 06e use it.
+
+
+      Done when `list_issue_statuses` returns all eight states, a test issue
+      assigned to Ren opens a
+
+      session on Issues, and Build, Review, QA, Docs, and Monitoring can each
+      comment on that issue
+
+      from a chat. That check is done once; no station re-verifies it.
+  - slug: dry-run-the-belt
+    title: 08 · Run one issue through the belt by hand
+    labels:
+      - onboarding
+    priority: high
+    description: >
+      Needs tasks 03, 04, and 05 on Issues and every station task: 06a and 06b
+      on QA, 06c on Docs,
+
+      06d, 06e (connect-posthog), and 06f on Monitoring, and 07 on Build. Read
+      each station task
+
+      and its evidence; an assigned seed is not setup completion.
+
+
+      With the owner, use a small test issue and safe repository change. Triage
+      it, write `## Plan`
+
+      in its Linear issue description, and get the current revision approved
+      with a Ren mention.
+
+      Follow `factory-handoff`: verify the receipt, prepare the complete
+      unassigned Build task,
+
+      make the guarded Linear transition, and assign Build last. Observe Build,
+      Review, and QA
+
+      starting automatically in their own projects with the correct project
+      agent, instructions,
+
+      skills, tools, and permissions. Record task IDs, session IDs, and pickup
+      evidence, not just
+
+      successful assignment responses. Do not open station chats for normal
+      handoffs.
+
+
+      Verify Build opens a draft PR and keeps it draft during implementation.
+      Confirm the mapping
+
+      still has `prListenerEnabled: false`. In an owner-supervised pause before
+      task assignment,
+
+      verify a manual ready click alone does not dispatch Review. Return the
+      owned test PR to draft
+
+      if needed; do not race a running station. Then observe Build finish
+      checks, prepare the complete
+
+      unassigned Review task and receipt, mark ready, read back the exact
+      SHA/open/non-draft state,
+
+      and assign Review last. An explicit factory PR mention must point to that
+      task and stop,
+
+      not claim prepared/active work or start another review path.
+
+
+      Verify a request-changes hop and re-review of a new head without a GitHub
+      wake. Observe Review
+
+      post "Changes needed", return the same reviewed head to draft with
+      authorized `gh pr ready --undo`,
+
+      and assign the Build repair last. Build repairs in draft, prepares the
+      new-head review, marks
+
+      ready, verifies the SHA/state, and dispatches Review. Record the
+      draft-ready-repair-ready
+
+      transitions and source receipts. Check old-SHA review/QA evidence cannot
+      be used for new-head
+
+      signoff, including a manual draft conversion or head change before
+      handoff; stop and hold on
+
+      mismatch without claiming cancellation of active tools. In a safe
+      owner-controlled check,
+
+      confirm denied/failed ready or undo operations leave the next task
+      unassigned and held work
+
+      recoverable on the same task. Do not change production credentials or
+      weaken permissions.
+
+      Verify PR comments show "Ready for review", "Changes needed", "QA
+      running", "QA passed", and
+
+      "Blocked human needed" with full SHAs and task/issue links. Repeat a
+      same-hop comment delivery
+
+      and reconcile an uncertain write without duplicate comments or exposing
+      private evidence.
+
+      Verify that
+
+      repeated delivery of the same task/hop does not repeat work, and dismissed
+      tasks stay rejected.
+
+      Exercise a human hold on the same task: agent cleared, human assigned,
+      both labels present.
+
+      After the answer and confirmed execution end, clear the human and both
+      holds, keep the task
+
+      open, then assign its station agent last. Confirm this starts a fresh
+      session and rechecks holds.
+
+      Verify that reopening alone, clearing labels, or a same-agent PATCH does
+      not start a session.
+
+      Check an event session records an in_progress tracking task without
+      launching itself again.
+
+
+      In an owner-controlled test, verify recovery for a saved assignment with
+      failed startup.
+
+      Confirm no pending or active execution remains before clearing and
+      reassigning the same task;
+
+      do not manufacture a second task or assume an empty session list proves
+      failure. If safe
+
+      failure testing or execution inspection is unavailable, record the blocker
+      and leave this
+
+      onboarding check incomplete. Do not change production credentials to
+      provoke failure.
+
+      A task write is not startup evidence. Report failures; do not add a poller
+      or retry loop.
+
+
+      Have the human merge only the QA-passed head, then mention Ren with
+      "merged" on Linear.
+
+      Issues verifies the merge and dispatches Docs through the same protocol.
+      Do not assume the
+
+      GitHub listener delivers merges. Write lessons under `inbox/issues/`.
+
+
+      Done when the issue is in `Done` with a human-merged code PR and a docs PR
+      (or verified no-docs
+
+      result), every hop has one receipt, automatic pickup is evidenced for
+      every receiving project,
+
+      and all side-path checks above pass. A manual recovery does not count as
+      automatic pickup.
+buildOrder: 1

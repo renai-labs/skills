@@ -1,0 +1,89 @@
+name: Review
+description: Reviews the pull request against the plan and the team's history.
+  Never approves. Starts on assigned Review tasks; explicit non-factory mentions
+  receive bounded comment-only review.
+defaultModel:
+  model: claude-fable-5-1
+  variant: high
+permission:
+  bash:
+    "*": allow
+    git push*: deny
+    git*push*: deny
+    gh pr edit*: deny
+    gh pr close*: deny
+    gh pr merge*: deny
+    gh api*-X PUT*: deny
+    gh api*/merge*: deny
+    git branch -D*: deny
+    gh repo delete*: deny
+    gh pr review*-a*: deny
+    ren orgs update*: deny
+    ren pods update*: deny
+    gh api*-X DELETE*: deny
+    ren projects update*: deny
+    gh api*--method DELETE*: deny
+    gh pr review*--approve*: deny
+  webfetch: allow
+skills:
+  - factory-handoff
+  - agent-dreaming
+  - code-review
+  - github-code-review
+mcps:
+  - linear
+  - slack
+channels:
+  - kind: github
+    slug: pr-review-repo
+    purpose: Repository access and explicit PR mentions only. Set prListenerEnabled
+      false; Draft/Ready is visual progress and factory reviews dispatch only
+      through assigned tasks.
+tasks:
+  - slug: review-baseline
+    title: "06d · Record the review baseline: linters, required checks, and owners"
+    labels:
+      - onboarding
+    priority: high
+    description: >
+      Needs task 03 on Issues. Owner-present Review chat. Mark this task
+      in_progress before work;
+
+      do not clear/reassign seeded tasks to launch setup. GitHub, Linear, and
+      Slack access were
+
+      verified in tasks 03, 04, and 05; do not re-verify them here.
+
+
+      Check out a worktree under `/tmp/factory/onboarding-review/` from the
+      default branch. Read
+
+      the lint, format, and typecheck configuration, the CI workflows,
+      `CODEOWNERS`, and any PR
+
+      template. Read the default branch protection with
+
+      `gh api repos/<owner>/<name>/branches/<default>/protection` and list the
+      required checks.
+
+      Write a "Review baseline" section in `engineering/preferences.md`: what
+      tooling already
+
+      enforces (so Review never nitpicks it), the required checks a PR must
+      pass, who owns which
+
+      paths, and the PR template fields. Preserve every other section. Ask the
+      owner which review
+
+      findings they consider blocking and which are comments; record the answer.
+      Remove the clean
+
+      worktree. This is the only ordinary write outside `inbox/review/` that
+      Review ever makes.
+
+
+      Done when the "Review baseline" section exists, names the enforced tooling
+      and required
+
+      checks, and the owner has confirmed the blocking/comment split.
+buildOrder: 3

@@ -13,8 +13,7 @@ Assigned tasks use the shared `verify-change` template, after Review has passed 
 3. Test the change through the product. Exercise the behaviour the plan promised, the obvious ways a
    user gets it wrong, and the paths this change could have broken. Run the repository's own test
    suite too.
-4. Post the results on the pull request: what you tested, what happened, and the screenshots or
-   replay. Evidence goes on the pull request so the person merging can see it.
+4. Publish and verify the PR evidence as described in `e2e-verification` before marking it ready.
 5. Decide:
    - **It works.** Mark the pull request ready for review. A person merges from there.
    - **It is broken.** Say exactly what fails and how to reproduce it, then hand it back to Build

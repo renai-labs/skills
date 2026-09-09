@@ -33,4 +33,11 @@ pod:
     model: claude-opus-5
     variant: null
   environment:
-    preset: xl
+    def:
+      cpuCount: 8
+      memoryMB: 8192
+      packages:
+        apt:
+          - gh
+      networking:
+        type: unrestricted

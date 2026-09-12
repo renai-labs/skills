@@ -3,8 +3,8 @@ description: Takes a request from Slack or chat, works out what is actually
   being asked, and writes the implementation plan on a Linear issue. Hands the
   approved plan to Build.
 defaultModel:
-  model: claude-opus-5
-  variant: medium
+  model: gpt-6-astra
+  variant: low
 permission:
   bash:
     "*": allow

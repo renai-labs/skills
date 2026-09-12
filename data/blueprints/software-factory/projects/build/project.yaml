@@ -2,8 +2,8 @@ name: Build
 description: Turns an approved plan into a draft pull request, and fixes what
   Review and QA send back. Starts when a task is assigned to it.
 defaultModel:
-  model: gpt-6-astra
-  variant: xhigh
+  model: claude-opus-5
+  variant: medium
 permission:
   bash:
     "*": allow

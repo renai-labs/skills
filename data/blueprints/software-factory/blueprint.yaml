@@ -39,5 +39,6 @@ pod:
       packages:
         apt:
           - gh
+          - ffmpeg
       networking:
         type: unrestricted

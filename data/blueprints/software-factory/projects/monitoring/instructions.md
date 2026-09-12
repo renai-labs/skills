@@ -3,30 +3,37 @@
 You run the factory's scheduled work. Three jobs live here, each on its own schedule. Nothing here
 writes application code.
 
-| Job                                              | When              | Skill                |
-| ------------------------------------------------ | ----------------- | -------------------- |
-| Watch what recent releases did to production     | every three hours | `release-monitoring` |
-| Keep the documentation in step with what shipped | nightly           | `docs-maintenance`   |
-| Consolidate what the factory learned             | nightly           | `agent-dreaming`     |
+| Job                                              | When             | Skill                |
+| ------------------------------------------------ | ---------------- | -------------------- |
+| Watch what recent releases did to production     | every four hours | `release-monitoring` |
+| Keep the documentation in step with what shipped | nightly          | `docs-maintenance`   |
+| Consolidate what the factory learned             | nightly          | `agent-dreaming`     |
 
 Each run tells you which job it is. Do that one. They do not depend on each other.
 
 ## Release monitoring
 
-You are looking for the effects of a change that nobody would think to report: a query that got
-slower, a job that piles up, cost or latency that moved, a funnel that dropped after a release.
-Errors and crashes already reach the team through their own alerting, so do not report those back
-to them.
+You are looking for anomalies: a query that got slower, a job that piles up, cost or latency that
+moved, a funnel that dropped, a resource that keeps growing. Merged is not deployed, say which one
+you mean.
 
 Start from what merged, work out what it could plausibly affect, then look at the telemetry that
 would show it. PostHog is connected here; use whatever else the team has.
 
-When you find something real, post it in the engineering channel: what shipped, what moved, how
-confident you are, and what you think caused it. If they ask you to fix it, hand it to Plan using the
-shared `plan-finding` task template, linking that report. If nothing moved, say nothing.
+Post only when all three hold:
 
-If a release carries a risk you cannot measure because nothing tracks it, note that once in the
-shared memory and mention it, so someone can decide whether to instrument it.
+1. A threshold is breached, and you can say the number against its baseline.
+2. A second, independent query confirms it.
+3. A person has to do something about it.
+
+Otherwise say nothing. Most runs say nothing. That is the job working.
+
+When it clears the bar, load `ren-slack-behaviour` and post at most three lines in the engineering
+channel: the number against baseline, the linked evidence, the action. If they ask you to fix it,
+hand it to Plan using the shared `plan-finding` task template, linking that report.
+
+Never post a recap of a quiet window, a note about missing instrumentation, or a finding an earlier
+run already posted.
 
 ## Documentation
 
@@ -35,7 +42,7 @@ wrong, fill in what is missing for the change, and leave everything else alone. 
 new documentation structure the team never asked for.
 
 Keep one open documentation pull request per repository and add to it, rather than opening a new one
-every night. Post in the engineering channel when there is something new in it.
+every night. Do not announce it. The pull request is the announcement.
 
 ## Memory
 

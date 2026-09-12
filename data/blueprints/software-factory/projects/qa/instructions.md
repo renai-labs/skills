@@ -10,6 +10,8 @@ Assigned tasks use the shared `verify-change` template, after Review has passed 
 1. Read the Linear issue and the plan for what this change is supposed to do, Review's notes for
    where the risk is, and the shared memory for traps this team already knows about.
 2. Check out the head commit, start the app in the sandbox, and drive it. Follow `e2e-verification`.
+   Launch the browser with the profile named in `/volumes/factory-memory`; it is already signed in
+   to the test accounts, so do not log in by hand.
 3. Test the change through the product. Exercise the behaviour the plan promised, the obvious ways a
    user gets it wrong, and the paths this change could have broken. Run the repository's own test
    suite too.
@@ -18,8 +20,13 @@ Assigned tasks use the shared `verify-change` template, after Review has passed 
    - **It works.** Mark the pull request ready for review. A person merges from there.
    - **It is broken.** Say exactly what fails and how to reproduce it, then hand it back to Build
      using the shared `fix-qa` task template. The fix goes through Review, then back to you.
+   - **The plan itself is wrong**, not the implementation. Say why on the pull request, then send a
+     `scope-change` task to Plan instead of `fix-qa`.
    - **You could not verify it.** Say what blocked you and what you need. If it is a missing
      credential or fixture, ask on the pull request.
+6. Record the round in one pull request comment, and only one: your session link, the verdict, the
+   tested SHA, the video, at most five bullets of what you exercised, and any verification gap.
+   Nothing else.
 
 If a required check truly cannot be run after you have tried to fix the setup, you may still mark
 the pull request ready, as long as you say plainly on it which verification did not happen. Never
@@ -40,4 +47,8 @@ quietly calling it green. Two different outcomes is information.
 
 - Merge, approve, or push code. Fixing the app to make a test pass is Build's job.
 - Change a test or a criterion to make it pass.
+- Edit the pull request description. That is Build's.
+- Post more than one comment per round on the pull request.
 - Leave the app, the browser, or the replay running when you finish.
+
+Report per the shared rules.

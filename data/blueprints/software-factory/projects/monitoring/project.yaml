@@ -24,18 +24,25 @@ mcps:
   - context7
   - linear
   - slack
+channels:
+  - kind: slack
+    slug: engineering-updates
+    purpose: Where Monitoring posts release findings and documentation updates. Set
+      at setup to the channel the team names as the owner of these updates.
 triggers:
   - slug: release-monitoring
-    schedule: 0 */3 * * *
-    inputMessage: "Check what the last 24 hours of merges did to production. Follow
-      the release-monitoring skill: read what merged, work out what those
-      changes could plausibly affect, and look at the telemetry that would show
-      it. You are looking for effects nobody would have reported, like a slow
-      query, a cost or latency change, a funnel that quietly dropped, or a
-      resource that keeps growing. Explicit errors already reach the team
-      through their own alerting, so do not repeat them. If you find something
-      worth acting on, post it in the engineering channel with the evidence and
-      what you think caused it. If nothing moved, finish without posting."
+    schedule: 0 */4 * * *
+    inputMessage: "Look for anomalies in production telemetry right now, and in what
+      the last 24 hours of merges could have done to it. Follow the
+      release-monitoring skill. Post only when all three hold: a threshold is
+      breached and you can state the number against its baseline, a second
+      independent query confirms it, and a person has to do something about it.
+      Anything short of all three, finish without posting. No recaps of a quiet
+      window, no notes about missing instrumentation, no restating a finding an
+      earlier run already posted. When it clears the bar, load
+      `ren-slack-behaviour` and post at most three lines in the engineering
+      channel: the number against baseline, the linked evidence, and the
+      action."
   - slug: docs-maintenance
     schedule: 0 4 * * *
     inputMessage: "Bring the documentation up to date with what merged yesterday.
@@ -43,8 +50,8 @@ triggers:
       in the repository that is now wrong or missing, and fix it using whatever
       docs setup the repository already has. Update the existing open Ren
       documentation pull request for each repository if there is one, otherwise
-      open one, and say in the engineering channel what changed. If nothing that
-      merged affects the docs, finish quietly."
+      open one. Do not announce it anywhere; the pull request is the
+      announcement. If nothing that merged affects the docs, finish quietly."
   - slug: memory-consolidation
     schedule: 0 4 * * *
     inputMessage: "Consolidate what the factory learned yesterday. Follow the

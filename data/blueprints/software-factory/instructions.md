@@ -27,28 +27,69 @@ factory labels or status conventions on top of them.
 
 Create an open Ren task in the receiving project and assign it to that project's Ren agent. That
 starts a session there. Put one of these handoff templates in the task description, using only the
-listed fields plus `origin_thread` for Slack-originated work. Senders use the template; receivers
-check its fields before starting. All fields
-except `type` are links. Read the linked sources rather than copying their contents into the task.
+listed fields. Senders use the template; receivers check its fields before starting. Every field is
+a link except `type` and `reason`, which are short text. Read the linked sources rather than copying
+their contents into the task.
 
-| Type            | From → To                             | Required fields                         |
-| --------------- | ------------------------------------- | --------------------------------------- |
-| `build-plan`    | Plan → Build                          | `type`, `issue`                         |
-| `review-change` | Build → Review, including after fixes | `type`, `issue`, `pr`                   |
-| `fix-review`    | Review → Build                        | `type`, `issue`, `pr`                   |
-| `verify-change` | Review → QA                           | `type`, `issue`, `pr`                   |
-| `fix-qa`        | QA → Build                            | `type`, `issue`, `pr`, `failure_report` |
-| `plan-finding`  | Monitoring → Plan                     | `type`, `finding`                       |
-| `notify-thread` | Any other project → Plan              | `type`, `origin_thread`, `update`       |
+| Type            | From → To                             | Required fields                                |
+| --------------- | ------------------------------------- | ---------------------------------------------- |
+| `build-plan`    | Plan → Build                          | `type`, `issue`                                |
+| `review-change` | Build → Review, including after fixes | `type`, `issue`, `pr`                          |
+| `fix-review`    | Review → Build                        | `type`, `issue`, `pr`                          |
+| `verify-change` | Review → QA                           | `type`, `issue`, `pr`                          |
+| `fix-qa`        | QA → Build                            | `type`, `issue`, `pr`, `failure_report`        |
+| `scope-change`  | Build, Review, or QA → Plan           | `type`, `issue`, `reason`, `pr` if one is open |
+| `plan-finding`  | Monitoring → Plan                     | `type`, `finding`                              |
 
 `issue` is the Linear issue; `pr` is the GitHub pull request. `failure_report` points to the QA
 results and reproduction on GitHub. `finding` points to the production report and evidence.
-`origin_thread` is the original Slack thread permalink. Plan records it on the Linear issue at
-intake; preserve it on every handoff, including fix rounds. `update` links to the PR or issue holding
-the outcome or blocker. If a required field is missing, ask the sender to supply it rather than guessing.
+`reason` is a short statement of what changed about the scope and why, for `scope-change`. If a
+required field is missing, ask the sender to supply it rather than guessing.
+
+A `scope-change` means the plan itself needs to change, not just the code, found partway through
+Build, Review, or QA. It can happen before a pull request exists, so `pr` is only required once one
+is open. Plan treats it like any other plan revision: update the issue with what changed and why,
+get it approved again, then hand the revised plan back with `build-plan`.
 
 Before you create one, look for an open or in-progress task for the same work and reuse it instead
 of filing a second one. Do not assign a task to yourself to leave yourself a note.
+
+## Reporting
+
+Every project reports its own phase. Nobody reports on anyone else's.
+
+Your session link is `https://useren.ai/app/sessions/$REN_SESSION_ID`.
+
+The Slack thread the work came from is `slack_channel` and `slack_thread_ts` on the Linear issue.
+Plan writes them there at intake. No thread on the issue means the work did not come from Slack;
+report on the issue only.
+
+When a task starts:
+
+1. Move the Linear issue to this phase's state.
+2. Comment your session link on the issue.
+3. Reply in the Slack thread: one line saying what is starting, with the session link.
+
+When you hand the work on, and when you stop for any reason: one more line in the thread saying
+what happened and where it went, with the session link.
+
+Once a pull request exists, your session link goes on it too, so anyone reading the pull request
+can get to the session that produced what they are looking at without going via Linear. Each
+project has one place for it and does not invent another:
+
+| Project | Where the link goes on the pull request                                      |
+| ------- | ---------------------------------------------------------------------------- |
+| Build   | a `Session:` line at the foot of the description, outside the five sentences |
+| Review  | the review body, which holds nothing else                                    |
+| QA      | the round comment, as its first line                                         |
+
+Build's description is rewritten each round, so its line names the session that last touched the
+branch. Review's and QA's stay on the rounds they belong to, which is where the history lives.
+
+One line means one line. Not a summary of what you did, not a restatement of the plan.
+
+Monitoring is outside this flow. Its findings go to the engineering channel, never to an intake
+thread.
 
 ## Two places a human decides
 
@@ -66,13 +107,6 @@ you need, on the pull request or the thread the work came from. Do not start a f
 Ask the same way when something genuinely needs a decision only a person can make, such as changed
 product intent or a missing credential. A scheduled session cannot use `ask`; write where the work
 lives instead.
-
-## Slack updates
-
-For Slack-originated work, beyond the existing plan-ready reply, send a `notify-thread` task to Plan
-only when the PR is ready for human review/merge or work stops and needs human help. Plan posts one
-short update in `origin_thread`, linking `update`; include any verification gap or action needed.
-Check for an existing update first. When Plan owns the outcome, reply directly. Other transitions stay quiet.
 
 ## Shared memory
 
@@ -97,5 +131,11 @@ session's worktree, branch, and processes alone. If you start the app, stop it b
 
 ## Writing
 
-Write like a colleague who is busy. Short sentences. Say the finding first, then the evidence. No
-preamble, no restating the request, no filler. Regular hyphens, never em dashes.
+Short lines. Finding first, evidence after. One idea per line.
+
+No preamble, no restating the request, no summary at the end. Regular hyphens, never em dashes.
+
+A table when it reads faster than sentences.
+
+Plan owns the issue description. Build owns the pull request description. Each is a short, current
+statement of where the work stands now, rewritten in place. History lives in comments, not there.

@@ -4,7 +4,7 @@ description: Reviews the pull request on GitHub, in public, on a different model
   approves.
 defaultModel:
   model: claude-fable-5-1
-  variant: high
+  variant: medium
 permission:
   bash:
     "*": allow

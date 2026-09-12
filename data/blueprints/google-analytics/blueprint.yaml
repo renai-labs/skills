@@ -1,0 +1,15 @@
+kind: app
+name: Google Analytics
+description: Google Analytics reports on website and app traffic, user
+  behaviour, and conversions, so marketers can see where sessions, revenue, and
+  drop-off come from
+brandColor: "#e37400"
+examplePrompts:
+  - Sessions, users, and conversions by channel for the last 30 days
+  - Monthly revenue and purchase conversion rate for the last 12 months, new
+    versus returning
+  - Which landing pages lost the most traffic week over week?
+skills:
+  - ga4-reporting
+mcps:
+  - google-analytics

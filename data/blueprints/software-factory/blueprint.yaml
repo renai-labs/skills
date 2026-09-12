@@ -40,5 +40,6 @@ pod:
         apt:
           - gh
           - ffmpeg
+          - ripgrep
       networking:
         type: unrestricted

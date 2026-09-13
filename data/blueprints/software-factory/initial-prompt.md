@@ -52,8 +52,8 @@ Run a setup trial. Explain the temporary PR comment and Slack test messages befo
 - Send QA an onboarding task, explicitly separate from `verify-change`, to run a setup trial on each repository: check out a fresh worktree, work
   through `e2e-verification`'s "Start the app" section to build the shared recipe, open a Kernel
   browser, sign in with the profile if one exists or a fresh account if not, capture a short
-  recording with the overlay on, cut it with FFmpeg, and publish and play it back on an agreed test PR comment with
-  `QA_GITHUB_UPLOAD_TOKEN`. Check attachment access without signing in.
+  recording with the overlay on, cut it with FFmpeg, and publish it on an agreed test PR comment with
+  `QA_GITHUB_UPLOAD_TOKEN`; a clean exit from `gh` is the whole check.
   Then clean the worktree and stop. This is the
   same Ren-task handoff real work will use, so it proves the mechanism reaches QA, not only that it
   exists, and it leaves the recipe in `factory-memory` before the first real QA run needs it.

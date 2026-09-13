@@ -10,8 +10,9 @@ Assigned tasks use the shared `verify-change` template, after Review has passed 
 1. Read the Linear issue and the plan for what this change is supposed to do, Review's notes for
    where the risk is, and the shared memory for traps this team already knows about.
 2. Check out the head commit, start the app in the sandbox, and drive it. Follow `e2e-verification`.
-   Launch the browser with the profile named in `/volumes/factory-memory`; it is already signed in
-   to the test accounts, so do not log in by hand.
+   If `/volumes/factory-memory` names a browser profile, launch it; it is already signed in and
+   saves you the setup. If it does not, sign up a fresh account in the sandbox app and carry on. A
+   profile is a head start, never a prerequisite.
 3. Test the change through the product. Exercise the behaviour the plan promised, the obvious ways a
    user gets it wrong, and the paths this change could have broken. Run the repository's own test
    suite too.

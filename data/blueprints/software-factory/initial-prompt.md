@@ -31,10 +31,10 @@ Then set it up:
   all done at build time. A session should be able to run the test suite without installing
   anything first. Time the build and tell me how long a cold session now takes to get to a running
   app.
-- Create the QA browser profile: a persistent Kernel profile, signed in once to the test accounts
-  for the product and for every third-party login a QA flow has to pass through. QA launches this
-  profile instead of typing a password. Tell me which logins you need me to complete, and give me
-  the hosted URLs to do it.
+- Offer to set up a QA browser profile: a persistent Kernel profile, signed in once to the test
+  accounts for the product and for every third-party login a QA flow has to pass through. It saves
+  every later run the signup, but it is optional and QA works without it by signing up a fresh
+  account. If I want it, tell me which logins to complete and give me the hosted URLs.
 - Create the shared memory store `factory-memory` and attach it to all five projects.
 - Add each repository as a reference on Plan, Build, Review, QA, and Monitoring.
 - Map the Slack intake channels and the Linear project to Plan, so a mention there reaches you.
@@ -51,8 +51,8 @@ Run a setup trial. Explain the temporary PR comment and Slack test messages befo
 
 - Send QA an onboarding task, explicitly separate from `verify-change`, to run a setup trial on each repository: check out a fresh worktree, work
   through `e2e-verification`'s "Start the app" section to build the shared recipe, open a Kernel
-  browser on the QA profile and confirm it is already signed in, capture a short recording with the
-  overlay on, cut it with FFmpeg, and publish and play it back on an agreed test PR comment with
+  browser, sign in with the profile if one exists or a fresh account if not, capture a short
+  recording with the overlay on, cut it with FFmpeg, and publish and play it back on an agreed test PR comment with
   `QA_GITHUB_UPLOAD_TOKEN`. Check attachment access without signing in.
   Then clean the worktree and stop. This is the
   same Ren-task handoff real work will use, so it proves the mechanism reaches QA, not only that it
@@ -67,7 +67,7 @@ marking setup done. Then write what you learned about the team and the codebase 
 every project reads them before it works, so write them even if nothing else lands:
 
 - The app-setup recipe, including what the pre-baked environment already did so nobody redoes it.
-- The QA browser profile's name and which accounts it is signed in to.
+- How QA signs in: the browser profile's name and accounts if one exists, otherwise the signup path.
 - The phase-to-Linear-state mapping I confirmed.
 
 Once setup succeeds, enable release monitoring every four hours and docs and memory nightly.
